@@ -16,15 +16,11 @@ const (
 // of a Hash256, and is used to detect duplicate sphinx packets.
 type HashPrefix [HashPrefixSize]byte
 
-// errReplayLogAlreadyStarted is an error returned when Start() is called on a
-// ReplayLog after it is started and before it is stopped.
-var errReplayLogAlreadyStarted error = errors.New(
-	"Replay log has already been started")
-
-// errReplayLogNotStarted is an error returned when methods other than Start()
-// are called on a ReplayLog before it is started or after it is stopped.
-var errReplayLogNotStarted error = errors.New(
-	"Replay log has not been started")
+var (
+	// errReplayLogNotStarted is an error returned when methods other than Start()
+	// are called on a ReplayLog before it is started or after it is stopped.
+	errReplayLogNotStarted = errors.New("replay log has not been started")
+)
 
 // hashSharedSecret Sha-256 hashes the shared secret and returns the first
 // HashPrefixSize bytes of the hash.

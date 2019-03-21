@@ -98,8 +98,8 @@ func (c *Circuit) Decode(r io.Reader) error {
 		return err
 	}
 
-	sessionKeyData := make([]byte, uint8(keyLength[0]))
-	if _, err := r.Read(sessionKeyData[:]); err != nil {
+	sessionKeyData := make([]byte, keyLength[0])
+	if _, err := r.Read(sessionKeyData); err != nil {
 		return err
 	}
 
@@ -108,7 +108,7 @@ func (c *Circuit) Decode(r io.Reader) error {
 	if _, err := r.Read(pathLength[:]); err != nil {
 		return err
 	}
-	c.PaymentPath = make([]*secp256k1.PublicKey, uint8(pathLength[0]))
+	c.PaymentPath = make([]*secp256k1.PublicKey, pathLength[0])
 
 	for i := 0; i < len(c.PaymentPath); i++ {
 		var pubKeyData [secp256k1.PubKeyBytesLenCompressed]byte

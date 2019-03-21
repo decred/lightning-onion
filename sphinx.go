@@ -43,9 +43,6 @@ const (
 	// bytes HMAC for a total of 65 bytes per hop.
 	hopDataSize = (1 + addressSize + 8 + 4 + padSize + hmacSize)
 
-	// sharedSecretSize is the size in bytes of the shared secrets.
-	sharedSecretSize = 32
-
 	// routingInfoSize is the fixed size of the the routing info. This
 	// consists of a addressSize byte address and a hmacSize byte HMAC for
 	// each hop of the route, the first pair in cleartext and the following
@@ -535,15 +532,15 @@ func computeBlindingFactor(hopPubKey *secp256k1.PublicKey,
 // blindGroupElement blinds the group element P by performing scalar
 // multiplication of the group element by blindingFactor: blindingFactor * P.
 func blindGroupElement(hopPubKey *secp256k1.PublicKey, blindingFactor []byte) *secp256k1.PublicKey {
-	newX, newY := secp256k1.S256().ScalarMult(hopPubKey.X, hopPubKey.Y, blindingFactor[:])
-	return &secp256k1.PublicKey{secp256k1.S256(), newX, newY}
+	newX, newY := secp256k1.S256().ScalarMult(hopPubKey.X, hopPubKey.Y, blindingFactor)
+	return secp256k1.NewPublicKey(newX, newY)
 }
 
 // blindBaseElement blinds the groups's generator G by performing scalar base
 // multiplication using the blindingFactor: blindingFactor * G.
 func blindBaseElement(blindingFactor []byte) *secp256k1.PublicKey {
 	newX, newY := secp256k1.S256().ScalarBaseMult(blindingFactor)
-	return &secp256k1.PublicKey{secp256k1.S256(), newX, newY}
+	return secp256k1.NewPublicKey(newX, newY)
 }
 
 // generateSharedSecret generates the shared secret for a particular hop. The
@@ -781,7 +778,7 @@ func processOnionPacket(onionPkt *OnionPacket,
 	// However if the uncovered 'nextMac' is all zeroes, then this
 	// indicates that we're the final hop in the route.
 	var action ProcessCode = MoreHops
-	if bytes.Compare(zeroHMAC[:], hopData.HMAC[:]) == 0 {
+	if bytes.Equal(zeroHMAC[:], hopData.HMAC[:]) {
 		action = ExitNode
 	}
 

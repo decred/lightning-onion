@@ -172,7 +172,7 @@ func TestBolt4Packet(t *testing.T) {
 		t.Fatalf("unable to decode onion packet: %v", err)
 	}
 
-	if bytes.Compare(b.Bytes(), finalPacket) != 0 {
+	if !bytes.Equal(b.Bytes(), finalPacket) {
 		t.Fatalf("final packet does not match expected BOLT 4 packet, "+
 			"want: %s, got %s", hex.EncodeToString(finalPacket),
 			hex.EncodeToString(b.Bytes()))

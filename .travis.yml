@@ -1,10 +1,11 @@
 language: go
 go:
-  - "1.11"
+  - 1.11.x
+  - 1.12.x
 sudo: false
 install:
-  - go get -v github.com/decred/lightning-onion
-  - go get -v github.com/davecgh/go-spew/spew
+  - go get -v github.com/golangci/golangci-lint/cmd/golangci-lint
 script:
-  - export PATH=$PATH:$HOME/gopath/bin
-  - go test -v
+  - export GO111MODULE=on
+  - (cd cmd && go build)
+  - ./goclean.sh

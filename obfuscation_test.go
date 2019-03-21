@@ -241,8 +241,8 @@ func TestOnionFailureSpecVector(t *testing.T) {
 		}
 		if !bytes.Equal(expectedEncryptErrordData, obfuscatedData) {
 			t.Fatalf("obfuscated data not match spec: expected %x, "+
-				"got %x", expectedEncryptErrordData[:],
-				obfuscatedData[:])
+				"got %x", expectedEncryptErrordData,
+				obfuscatedData)
 		}
 	}
 

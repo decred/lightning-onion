@@ -22,9 +22,13 @@ func main() {
 
 	assocData := bytes.Repeat([]byte{'B'}, 32)
 
-	if len(args) == 1 {
+	if len(args) < 2 {
 		fmt.Printf("Usage: %s (generate|decode) <private-keys>\n", args[0])
-	} else if args[1] == "generate" {
+		os.Exit(1)
+	}
+
+	switch args[1] {
+	case "generate":
 		var route []*secp256k1.PublicKey
 		for i, hexKey := range args[2:] {
 			binKey, err := hex.DecodeString(hexKey)
@@ -66,7 +70,7 @@ func main() {
 		}
 
 		fmt.Printf("%x\n", w.Bytes())
-	} else if args[1] == "decode" {
+	case "decode":
 		binKey, err := hex.DecodeString(args[2])
 		if len(binKey) != 32 || err != nil {
 			log.Fatalf("Argument not a valid hex private key")
@@ -100,5 +104,8 @@ func main() {
 			log.Fatalf("Error serializing message: %v", err)
 		}
 		fmt.Printf("%x\n", w.Bytes())
+	default:
+		fmt.Printf("Usage: %s (generate|decode) <private-keys>\n", args[0])
+		os.Exit(1)
 	}
 }
