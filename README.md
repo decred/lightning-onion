@@ -1,4 +1,10 @@
-# lightning-onion
+lightning-onion
+===============
+
+[![Build Status](https://github.com/decred/lightning-onion/workflows/Build%20and%20Test/badge.svg)](https://github.com/decred/lightning-onion/actions)
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](http://copyfree.org)
+
+## Overview
 This repository houses an implementation of the [Lightning
 Network's](lightning.network) onion routing protocol, adapted to the
 [Decred](https://decred.org) network. The Lightning Network uses onion routing
@@ -37,7 +43,7 @@ able to achieve the following security and privacy features:
     payment route
 
 Our current onion routing protocol utilizes a message format derived from
-[Sphinx](http://www.cypherpunks.ca/~iang/pubs/Sphinx_Oakland09.pdf). In order
+[Sphinx](https://www.cypherpunks.ca/~iang/pubs/Sphinx_Oakland09.pdf). In order
 to cater Sphinx's mix-format to our specification application, we've made the
 following modifications: 
 
@@ -57,7 +63,7 @@ following modifications:
 For further information see these resources: 
 
   * [Olaoluwa's original post to the lightning-dev mailing
-    list](http://lists.linuxfoundation.org/pipermail/lightning-dev/2015-December/000384.html). 
+    list](https://lists.linuxfoundation.org/pipermail/lightning-dev/2015-December/000384.html).
   * [Privacy Preserving Decentralized Micropayments](https://scalingbitcoin.org/milan2016/presentations/D1%20-%206%20-%20Olaoluwa%20Osuntokun.pdf) -- presented at Scaling Bitcoin Hong Kong.
 
 
