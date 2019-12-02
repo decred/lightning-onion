@@ -599,7 +599,7 @@ func TestSphinxHopVariableSizedPayloads(t *testing.T) {
 			eobMapping: map[int]HopPayload{
 				0: {
 					Type:    PayloadTLV,
-					Payload: bytes.Repeat([]byte("a"), HopDataSize-HMACSize),
+					Payload: bytes.Repeat([]byte("a"), LegacyHopDataSize-HMACSize),
 				},
 			},
 		},
@@ -611,7 +611,7 @@ func TestSphinxHopVariableSizedPayloads(t *testing.T) {
 			eobMapping: map[int]HopPayload{
 				0: {
 					Type:    PayloadTLV,
-					Payload: bytes.Repeat([]byte("a"), HopDataSize*3),
+					Payload: bytes.Repeat([]byte("a"), LegacyHopDataSize*3),
 				},
 			},
 		},
@@ -632,7 +632,7 @@ func TestSphinxHopVariableSizedPayloads(t *testing.T) {
 				}, nil),
 				1: {
 					Type:    PayloadTLV,
-					Payload: bytes.Repeat([]byte("a"), HopDataSize*2),
+					Payload: bytes.Repeat([]byte("a"), LegacyHopDataSize*2),
 				},
 			},
 		},
