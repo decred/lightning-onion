@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/hmac"
 	"crypto/sha256"
+	"fmt"
 	"io"
 	"math/big"
 
@@ -71,6 +72,11 @@ const (
 
 	// baseVersion represent the current supported version of onion packet.
 	baseVersion = 0
+)
+
+var (
+	ErrMaxRoutingInfoSizeExceeded = fmt.Errorf(
+		"max routing info size of %v bytes exceeded", routingInfoSize)
 )
 
 // OnionPacket is the onion wrapped hop-to-hop routing information necessary to
@@ -185,6 +191,11 @@ func generateSharedSecrets(paymentPath []*secp256k1.PublicKey,
 // routing a message through the mix-net path outline by 'paymentPath'.
 func NewOnionPacket(paymentPath *PaymentPath, sessionKey *secp256k1.PrivateKey,
 	assocData []byte) (*OnionPacket, error) {
+
+	// Check whether total payload size doesn't exceed the hard maximum.
+	if paymentPath.TotalPayloadSize() > routingInfoSize {
+		return nil, ErrMaxRoutingInfoSizeExceeded
+	}
 
 	numHops := paymentPath.TrueRouteLength()
 
