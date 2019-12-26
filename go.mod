@@ -1,6 +1,6 @@
-module github.com/decred/lightning-onion/v2
+module github.com/decred/lightning-onion/v3
 
-go 1.11
+go 1.12
 
 require (
 	github.com/aead/chacha20 v0.0.0-20180709150244-8b13a72661da
