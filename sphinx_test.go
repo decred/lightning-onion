@@ -10,8 +10,8 @@ import (
 	"testing"
 
 	"github.com/davecgh/go-spew/spew"
-	"github.com/decred/dcrd/chaincfg/v2"
-	"github.com/decred/dcrd/dcrec/secp256k1/v2"
+	"github.com/decred/dcrd/chaincfg/v3"
+	"github.com/decred/dcrd/dcrec/secp256k1/v3"
 )
 
 // BOLT 4 Test Vectors
@@ -132,7 +132,7 @@ func newTestRoute(numHops int) ([]*Router, *PaymentPath, *[]HopData, *OnionPacke
 	// Generate a forwarding message to route to the final node via the
 	// generated intermediate nodes above.  Destination should be Hash160,
 	// adding padding so parsing still works.
-	sessionKey, _ := secp256k1.PrivKeyFromBytes(
+	sessionKey := secp256k1.PrivKeyFromBytes(
 		bytes.Repeat([]byte{'A'}, 32),
 	)
 	fwdMsg, err := NewOnionPacket(&route, sessionKey, nil)
@@ -183,8 +183,6 @@ func TestBolt4Packet(t *testing.T) {
 			t.Fatalf("unable to make hop payload: %v", err)
 		}
 
-		pubKey.Curve = nil
-
 		route[i] = OnionHop{
 			NodePub:    *pubKey,
 			HopPayload: hopPayload,
@@ -197,7 +195,7 @@ func TestBolt4Packet(t *testing.T) {
 			"%v", err)
 	}
 
-	sessionKey, _ := secp256k1.PrivKeyFromBytes(bolt4SessionKey)
+	sessionKey := secp256k1.PrivKeyFromBytes(bolt4SessionKey)
 	pkt, err := NewOnionPacket(&route, sessionKey, bolt4AssocData)
 	if err != nil {
 		t.Fatalf("unable to construct onion packet: %v", err)
@@ -561,7 +559,7 @@ func newEOBRoute(numHops uint32,
 	// Generate a forwarding message to route to the final node via the
 	// generated intermdiates nodes above.  Destination should be Hash160,
 	// adding padding so parsing still works.
-	sessionKey, _ := secp256k1.PrivKeyFromBytes(
+	sessionKey := secp256k1.PrivKeyFromBytes(
 		bytes.Repeat([]byte{'A'}, 32),
 	)
 	fwdMsg, err := NewOnionPacket(&route, sessionKey, nil)
@@ -896,7 +894,7 @@ func TestVariablePayloadOnion(t *testing.T) {
 	}
 
 	// With all the required data assembled, we'll craft a new packet.
-	sessionKey, _ := secp256k1.PrivKeyFromBytes(sessionKeyBytes)
+	sessionKey := secp256k1.PrivKeyFromBytes(sessionKeyBytes)
 	pkt, err := NewOnionPacket(&route, sessionKey, associatedData)
 	if err != nil {
 		t.Fatalf("unable to construct onion packet: %v", err)

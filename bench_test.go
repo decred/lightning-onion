@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/decred/dcrd/dcrec/secp256k1/v2"
+	"github.com/decred/dcrd/dcrec/secp256k1/v3"
 )
 
 var (
@@ -44,7 +44,7 @@ func BenchmarkPathPacketConstruction(b *testing.B) {
 		}
 	}
 
-	d, _ := secp256k1.PrivKeyFromBytes(bytes.Repeat([]byte{'A'}, 32))
+	d := secp256k1.PrivKeyFromBytes(bytes.Repeat([]byte{'A'}, 32))
 	b.ReportAllocs()
 
 	b.StartTimer()

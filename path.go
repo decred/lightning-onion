@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/decred/dcrd/dcrec/secp256k1/v2"
+	"github.com/decred/dcrd/dcrec/secp256k1/v3"
 	"github.com/decred/dcrd/wire"
 )
 
@@ -339,7 +339,8 @@ type OnionHop struct {
 
 // IsEmpty returns true if the hop isn't populated.
 func (o OnionHop) IsEmpty() bool {
-	return o.NodePub.X == nil || o.NodePub.Y == nil
+	var emptyPubKey secp256k1.PublicKey
+	return o.NodePub.IsEqual(&emptyPubKey)
 }
 
 // NodeKeys returns a slice pointing to node keys that this route comprises of.

@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/decred/dcrd/dcrec/secp256k1/v2"
+	"github.com/decred/dcrd/dcrec/secp256k1/v3"
 )
 
 // TestOnionFailure checks the ability of sender of payment to decode the
@@ -22,7 +22,7 @@ func TestOnionFailure(t *testing.T) {
 		}
 		paymentPath[i] = privKey.PubKey()
 	}
-	sessionKey, _ := secp256k1.PrivKeyFromBytes(bytes.Repeat([]byte{'A'}, 32))
+	sessionKey := secp256k1.PrivKeyFromBytes(bytes.Repeat([]byte{'A'}, 32))
 
 	// Reduce the error path on one node, in order to check that we are
 	// able to receive the error not only from last hop.
@@ -164,7 +164,7 @@ func getSpecSessionKey() (*secp256k1.PrivateKey, error) {
 		return nil, err
 	}
 
-	privKey, _ := secp256k1.PrivKeyFromBytes(bKey)
+	privKey := secp256k1.PrivKeyFromBytes(bKey)
 	return privKey, nil
 }
 

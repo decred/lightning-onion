@@ -18,6 +18,7 @@ env GORACE="halt_on_error=1" go test -race ./...
 
 # check linters
 golangci-lint run --disable-all --deadline=10m \
+  --out-format=github-actions \
   --enable=gofmt \
   --enable=golint \
   --enable=vet \

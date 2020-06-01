@@ -3,7 +3,7 @@ package sphinx
 import (
 	"io"
 
-	"github.com/decred/dcrd/dcrec/secp256k1/v2"
+	"github.com/decred/dcrd/dcrec/secp256k1/v3"
 )
 
 // OnionErrorEncrypter is a struct that's used to implement onion error
@@ -62,7 +62,7 @@ func (c *Circuit) Decode(r io.Reader) error {
 		return err
 	}
 
-	c.SessionKey, _ = secp256k1.PrivKeyFromBytes(sessionKeyData)
+	c.SessionKey = secp256k1.PrivKeyFromBytes(sessionKeyData)
 	var pathLength [1]byte
 	if _, err := r.Read(pathLength[:]); err != nil {
 		return err

@@ -2,7 +2,6 @@ package sphinx
 
 import (
 	"bytes"
-	"crypto/ecdsa"
 	"crypto/hmac"
 	"crypto/sha256"
 	"io"
@@ -10,8 +9,8 @@ import (
 
 	"github.com/decred/dcrd/dcrec"
 
-	"github.com/decred/dcrd/dcrec/secp256k1/v2"
-	"github.com/decred/dcrd/dcrutil/v2"
+	"github.com/decred/dcrd/dcrec/secp256k1/v3"
+	"github.com/decred/dcrd/dcrutil/v3"
 )
 
 const (
@@ -143,7 +142,7 @@ func generateSharedSecrets(paymentPath []*secp256k1.PublicKey,
 	// factor is aggregated into the modular product, and used as the scalar
 	// value in deriving the hop ephemeral keys and shared secrets.
 	var cachedBlindingFactor big.Int
-	cachedBlindingFactor.SetBytes(sessionKey.D.Bytes())
+	cachedBlindingFactor.SetBytes(sessionKey.ToECDSA().D.Bytes())
 
 	// Now recursively compute the cached blinding factor, ephemeral ECDH
 	// pub keys, and shared secret for each hop.
@@ -473,15 +472,8 @@ func NewRouter(nodeKey *secp256k1.PrivateKey, net dcrutil.AddressParams, log Rep
 	return &Router{
 		nodeID:   nodeID,
 		nodeAddr: nodeAddr,
-		onionKey: &secp256k1.PrivateKey{
-			PublicKey: ecdsa.PublicKey{
-				Curve: secp256k1.S256(),
-				X:     nodeKey.X,
-				Y:     nodeKey.Y,
-			},
-			D: nodeKey.D,
-		},
-		log: log,
+		onionKey: nodeKey,
+		log:      log,
 	}
 }
 

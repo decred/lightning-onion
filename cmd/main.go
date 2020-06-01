@@ -10,8 +10,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/decred/dcrd/chaincfg/v2"
-	"github.com/decred/dcrd/dcrec/secp256k1/v2"
+	"github.com/decred/dcrd/chaincfg/v3"
+	"github.com/decred/dcrd/dcrec/secp256k1/v3"
 	sphinx "github.com/decred/lightning-onion/v2"
 )
 
@@ -44,7 +44,7 @@ func parseOnionSpec(spec OnionSpec) (*sphinx.PaymentPath, *secp256k1.PrivateKey,
 		binSessionKey = bytes.Repeat([]byte{'A'}, 32)
 	}
 
-	sessionKey, _ := secp256k1.PrivKeyFromBytes(binSessionKey)
+	sessionKey := secp256k1.PrivKeyFromBytes(binSessionKey)
 
 	for i, hop := range spec.Hops {
 		binKey, err := hex.DecodeString(hop.PublicKey)
@@ -132,7 +132,7 @@ func main() {
 			log.Fatalf("Error decoding message: %s", err)
 		}
 
-		privkey, _ := secp256k1.PrivKeyFromBytes(binKey)
+		privkey := secp256k1.PrivKeyFromBytes(binKey)
 		replayLog := sphinx.NewMemoryReplayLog()
 		s := sphinx.NewRouter(privkey, chaincfg.TestNet3Params(), replayLog)
 

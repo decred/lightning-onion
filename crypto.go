@@ -8,7 +8,7 @@ import (
 	"fmt"
 
 	"github.com/aead/chacha20"
-	"github.com/decred/dcrd/dcrec/secp256k1/v2"
+	"github.com/decred/dcrd/dcrec/secp256k1/v3"
 )
 
 const (
@@ -118,15 +118,30 @@ func computeBlindingFactor(hopPubKey *secp256k1.PublicKey,
 // blindGroupElement blinds the group element P by performing scalar
 // multiplication of the group element by blindingFactor: blindingFactor * P.
 func blindGroupElement(hopPubKey *secp256k1.PublicKey, blindingFactor []byte) *secp256k1.PublicKey {
-	newX, newY := secp256k1.S256().ScalarMult(hopPubKey.X, hopPubKey.Y, blindingFactor[:])
-	return &secp256k1.PublicKey{Curve: secp256k1.S256(), X: newX, Y: newY}
+	var modNScalar secp256k1.ModNScalar
+	modNScalar.SetByteSlice(blindingFactor)
+
+	var point secp256k1.JacobianPoint
+	hopPubKey.AsJacobian(&point)
+
+	var result secp256k1.JacobianPoint
+	secp256k1.ScalarMultNonConst(&modNScalar, &point, &result)
+	result.ToAffine()
+
+	return secp256k1.NewPublicKey(&result.X, &result.Y)
 }
 
 // blindBaseElement blinds the groups's generator G by performing scalar base
 // multiplication using the blindingFactor: blindingFactor * G.
 func blindBaseElement(blindingFactor []byte) *secp256k1.PublicKey {
-	newX, newY := secp256k1.S256().ScalarBaseMult(blindingFactor)
-	return &secp256k1.PublicKey{Curve: secp256k1.S256(), X: newX, Y: newY}
+	var modNScalar secp256k1.ModNScalar
+	modNScalar.SetByteSlice(blindingFactor)
+
+	var result secp256k1.JacobianPoint
+	secp256k1.ScalarBaseMultNonConst(&modNScalar, &result)
+	result.ToAffine()
+
+	return secp256k1.NewPublicKey(&result.X, &result.Y)
 }
 
 // sharedSecretGenerator is an interface that abstracts away exactly *how* the
@@ -144,7 +159,7 @@ func (r *Router) generateSharedSecret(dhKey *secp256k1.PublicKey) (Hash256, erro
 	var sharedSecret Hash256
 
 	// Ensure that the public key is on our curve.
-	if !secp256k1.S256().IsOnCurve(dhKey.X, dhKey.Y) {
+	if !secp256k1.S256().IsOnCurve(dhKey.X(), dhKey.Y()) {
 		return sharedSecret, ErrInvalidOnionKey
 	}
 
@@ -160,8 +175,17 @@ func (r *Router) generateSharedSecret(dhKey *secp256k1.PublicKey) (Hash256, erro
 // serialize that using a compressed format, then feed the raw bytes through a
 // single SHA256 invocation.  The resulting value is the shared secret.
 func generateSharedSecret(pub *secp256k1.PublicKey, priv *secp256k1.PrivateKey) Hash256 {
-	s := &secp256k1.PublicKey{}
-	s.X, s.Y = secp256k1.S256().ScalarMult(pub.X, pub.Y, priv.D.Bytes())
+	var modNScalar secp256k1.ModNScalar
+	modNScalar.SetByteSlice(priv.ToECDSA().D.Bytes())
+
+	var point secp256k1.JacobianPoint
+	pub.AsJacobian(&point)
+
+	var result secp256k1.JacobianPoint
+	secp256k1.ScalarMultNonConst(&modNScalar, &point, &result)
+	result.ToAffine()
+
+	s := secp256k1.NewPublicKey(&result.X, &result.Y)
 
 	return sha256.Sum256(s.SerializeCompressed())
 }
