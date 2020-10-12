@@ -2,6 +2,7 @@ package sphinx
 
 import (
 	"encoding/binary"
+	"errors"
 	"io"
 )
 
@@ -65,10 +66,10 @@ func (rs *ReplaySet) Decode(r io.Reader) error {
 		var seqNum uint16
 
 		err := binary.Read(r, binary.BigEndian, &seqNum)
-		switch err {
-		case nil:
+		switch {
+		case err == nil:
 			// Successful read, proceed.
-		case io.EOF:
+		case errors.Is(err, io.EOF):
 			return nil
 		default:
 			// Can return ErrShortBuffer or ErrUnexpectedEOF.

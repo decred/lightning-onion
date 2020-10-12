@@ -78,7 +78,7 @@ func (p *PrivKeyECDH) ECDH(pub *secp256k1.PublicKey) ([32]byte, error) {
 	res.ToAffine()
 	sharedPub := secp256k1.NewPublicKey(&res.X, &res.Y)
 	if !sharedPub.IsOnCurve() {
-		return [32]byte{}, fmt.Errorf("Derived ECDH point is not on the secp256k1 curve")
+		return [32]byte{}, fmt.Errorf("derived ECDH point is not on the secp256k1 curve")
 	}
 
 	// Hash of the serialized point is the shared secret.
@@ -121,7 +121,7 @@ func calcMac(key [keyLen]byte, msg []byte) [HMACSize]byte {
 
 // xor computes the byte wise XOR of a and b, storing the result in dst. Only
 // the frist `min(len(a), len(b))` bytes will be xor'd.
-func xor(dst, a, b []byte) int {
+func xor(dst, a, b []byte) {
 	n := len(a)
 	if len(b) < n {
 		n = len(b)
@@ -129,7 +129,6 @@ func xor(dst, a, b []byte) int {
 	for i := 0; i < n; i++ {
 		dst[i] = a[i] ^ b[i]
 	}
-	return n
 }
 
 // generateKey generates a new key for usage in Sphinx packet
@@ -147,7 +146,7 @@ func generateKey(keyType string, sharedKey *Hash256) [keyLen]byte {
 	return key
 }
 
-// generateCipherStream generates a stream of cryptographic psuedo-random bytes
+// generateCipherStream generates a stream of cryptographic pseudo-random bytes
 // intended to be used to encrypt a message using a one-time-pad like
 // construction.
 func generateCipherStream(key [keyLen]byte, numBytes uint) []byte {
@@ -270,7 +269,7 @@ func (o *OnionErrorDecrypter) DecryptError(encryptedData []byte) (
 		o.circuit.SessionKey,
 	)
 	if err != nil {
-		return nil, fmt.Errorf("error generating shared secret: %v",
+		return nil, fmt.Errorf("error generating shared secret: %w",
 			err)
 	}
 

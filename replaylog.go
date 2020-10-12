@@ -157,7 +157,7 @@ func (rl *MemoryReplayLog) PutBatch(batch *Batch) (*ReplaySet, error) {
 		replays = NewReplaySet()
 		err := batch.ForEach(func(seqNum uint16, hashPrefix *HashPrefix, cltv uint32) error {
 			err := rl.Put(hashPrefix, cltv)
-			if err == ErrReplayedPacket {
+			if errors.Is(err, ErrReplayedPacket) {
 				replays.Add(seqNum)
 				return nil
 			}

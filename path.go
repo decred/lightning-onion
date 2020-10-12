@@ -150,7 +150,6 @@ func NewHopPayload(hopData *HopData, eob []byte) (HopPayload, error) {
 
 	case hopData != nil && len(eob) > 0:
 		return h, fmt.Errorf("cannot provide both hop data AND an eob")
-
 	}
 
 	// If the hop data is specified, then we'll write that now, as it
@@ -270,7 +269,7 @@ func (hp *HopPayload) Decode(r io.Reader) error {
 	//
 	// TODO(roasbeef): can avoid all these copies
 	hp.Payload = make([]byte, payloadSize)
-	if _, err := io.ReadFull(bufReader, hp.Payload[:]); err != nil {
+	if _, err := io.ReadFull(bufReader, hp.Payload); err != nil {
 		return err
 	}
 	if _, err := io.ReadFull(bufReader, hp.HMAC[:]); err != nil {

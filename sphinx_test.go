@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"reflect"
@@ -14,7 +15,7 @@ import (
 	"github.com/decred/dcrd/dcrec/secp256k1/v3"
 )
 
-// BOLT 4 Test Vectors
+// BOLT 4 Test Vectors.
 var (
 	// bolt4PubKeys are the public keys of the hops used in the route.
 	bolt4PubKeys = []string{
@@ -110,8 +111,7 @@ func newTestRoute(numHops int) ([]*Router, *PaymentPath, *[]HopData, *OnionPacke
 
 func TestBolt4Packet(t *testing.T) {
 	var (
-		route    PaymentPath
-		hopsData []HopData
+		route PaymentPath
 	)
 	for i, pubKeyHex := range bolt4PubKeys {
 		pubKeyBytes, err := hex.DecodeString(pubKeyHex)
@@ -129,7 +129,6 @@ func TestBolt4Packet(t *testing.T) {
 			OutgoingCltv:  uint32(i),
 		}
 		copy(hopData.NextAddress[:], bytes.Repeat([]byte{byte(i)}, 8))
-		hopsData = append(hopsData, hopData)
 
 		hopPayload, err := NewHopPayload(&hopData, nil)
 		if err != nil {
@@ -279,7 +278,7 @@ func TestSphinxNodeRelpay(t *testing.T) {
 
 	// Now, force the node to process the packet a second time, this should
 	// fail with a detected replay error.
-	if _, err := nodes[0].ProcessOnionPacket(fwdMsg, nil, 1); err != ErrReplayedPacket {
+	if _, err := nodes[0].ProcessOnionPacket(fwdMsg, nil, 1); !errors.Is(err, ErrReplayedPacket) {
 		t.Fatalf("sphinx packet replay should be rejected, instead error is %v", err)
 	}
 }
@@ -454,13 +453,13 @@ func TestSphinxEncodeDecode(t *testing.T) {
 	}
 
 	// Encode the created onion packet into an empty buffer. This should
-	// succeeed without any errors.
+	// succeed without any errors.
 	var b bytes.Buffer
 	if err := fwdMsg.Encode(&b); err != nil {
 		t.Fatalf("unable to encode message: %v", err)
 	}
 
-	// Now decode the bytes encoded above. Again, this should succeeed
+	// Now decode the bytes encoded above. Again, this should succeed
 	// without any errors.
 	newFwdMsg := &OnionPacket{}
 	if err := newFwdMsg.Decode(&b); err != nil {
@@ -664,7 +663,7 @@ func TestSphinxHopVariableSizedPayloads(t *testing.T) {
 		nextPkt, routers, err := newEOBRoute(
 			testCase.numNodes, testCase.eobMapping,
 		)
-		if testCase.expectedError != err {
+		if !errors.Is(err, testCase.expectedError) {
 			t.Fatalf("#%v: unable to create eob "+
 				"route: %v", testCase, err)
 		}
