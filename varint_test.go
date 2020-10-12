@@ -2,6 +2,7 @@ package sphinx
 
 import (
 	"bytes"
+	"errors"
 	"io"
 	"math"
 	"testing"
@@ -199,7 +200,7 @@ func testReadVarInt(t *testing.T, test varIntTest) {
 	var buf [8]byte
 	r := bytes.NewReader(test.Bytes)
 	val, err := ReadVarInt(r, &buf)
-	if err != nil && err != test.ExpErr {
+	if err != nil && !errors.Is(err, test.ExpErr) {
 		t.Fatalf("expected decoding error: %v, got: %v",
 			test.ExpErr, err)
 	}

@@ -9,7 +9,6 @@ import (
 	"math/big"
 
 	"github.com/decred/dcrd/dcrec"
-
 	"github.com/decred/dcrd/dcrec/secp256k1/v3"
 	"github.com/decred/dcrd/dcrutil/v3"
 )
@@ -222,7 +221,7 @@ func NewOnionPacket(paymentPath *PaymentPath, sessionKey *secp256k1.PrivateKey,
 		paymentPath.NodeKeys(), sessionKey,
 	)
 	if err != nil {
-		return nil, fmt.Errorf("error generating shared secret: %v", err)
+		return nil, fmt.Errorf("error generating shared secret: %w", err)
 	}
 
 	// Generate the padding, called "filler strings" in the paper.
@@ -277,7 +276,7 @@ func NewOnionPacket(paymentPath *PaymentPath, sessionKey *secp256k1.PrivateKey,
 		// Once the packet for this hop has been assembled, we'll
 		// re-encrypt the packet by XOR'ing with a stream of bytes
 		// generated using our shared secret.
-		xor(mixHeader[:], mixHeader[:], streamBytes[:])
+		xor(mixHeader[:], mixHeader[:], streamBytes)
 
 		// If this is the "last" hop, then we'll override the tail of
 		// the hop data.
@@ -548,7 +547,7 @@ func (r *Router) ProcessOnionPacket(onionPkt *OnionPacket,
 	// Continue to optimistically process this packet, deferring replay
 	// protection until the end to reduce the penalty of multiple IO
 	// operations.
-	packet, err := processOnionPacket(onionPkt, &sharedSecret, assocData, r)
+	packet, err := processOnionPacket(onionPkt, &sharedSecret, assocData)
 	if err != nil {
 		return nil, err
 	}
@@ -575,7 +574,7 @@ func (r *Router) ReconstructOnionPacket(onionPkt *OnionPacket,
 		return nil, err
 	}
 
-	return processOnionPacket(onionPkt, &sharedSecret, assocData, r)
+	return processOnionPacket(onionPkt, &sharedSecret, assocData)
 }
 
 // unwrapPacket wraps a layer of the passed onion packet using the specified
@@ -642,8 +641,7 @@ func unwrapPacket(onionPkt *OnionPacket, sharedSecret *Hash256,
 // packets. The processed packets returned from this method should only be used
 // if the packet was not flagged as a replayed packet.
 func processOnionPacket(onionPkt *OnionPacket, sharedSecret *Hash256,
-	assocData []byte,
-	sharedSecretGen sharedSecretGenerator) (*ProcessedPacket, error) {
+	assocData []byte) (*ProcessedPacket, error) {
 
 	// First, we'll unwrap an initial layer of the onion packet. Typically,
 	// we'll only have a single layer to unwrap, However, if the sender has
@@ -745,9 +743,7 @@ func (t *Tx) ProcessOnionPacket(seqNum uint16, onionPkt *OnionPacket,
 	// Continue to optimistically process this packet, deferring replay
 	// protection until the end to reduce the penalty of multiple IO
 	// operations.
-	packet, err := processOnionPacket(
-		onionPkt, &sharedSecret, assocData, t.router,
-	)
+	packet, err := processOnionPacket(onionPkt, &sharedSecret, assocData)
 	if err != nil {
 		return err
 	}

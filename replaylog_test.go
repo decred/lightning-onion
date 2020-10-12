@@ -1,6 +1,7 @@
 package sphinx
 
 import (
+	"errors"
 	"testing"
 )
 
@@ -21,7 +22,7 @@ func TestMemoryReplayLogStorageAndRetrieval(t *testing.T) {
 	if err == nil {
 		t.Fatalf("Expected ErrLogEntryNotFound")
 	}
-	if err != ErrLogEntryNotFound {
+	if !errors.Is(err, ErrLogEntryNotFound) {
 		t.Fatalf("Get failed - received unexpected error upon Get: %v", err)
 	}
 
@@ -36,7 +37,7 @@ func TestMemoryReplayLogStorageAndRetrieval(t *testing.T) {
 	if err == nil {
 		t.Fatalf("Expected ErrReplayedPacket")
 	}
-	if err != ErrReplayedPacket {
+	if !errors.Is(err, ErrReplayedPacket) {
 		t.Fatalf("Put failed - received unexpected error upon Put: %v", err)
 	}
 
@@ -60,7 +61,7 @@ func TestMemoryReplayLogStorageAndRetrieval(t *testing.T) {
 	if err == nil {
 		t.Fatalf("Expected ErrLogEntryNotFound")
 	}
-	if err != ErrLogEntryNotFound {
+	if !errors.Is(err, ErrLogEntryNotFound) {
 		t.Fatalf("Get failed - received unexpected error upon Get: %v", err)
 	}
 
