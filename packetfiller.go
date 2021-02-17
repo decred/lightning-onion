@@ -3,8 +3,8 @@ package sphinx
 import (
 	"crypto/rand"
 
-	"github.com/aead/chacha20"
 	"github.com/decred/dcrd/dcrec/secp256k1/v3"
+	"golang.org/x/crypto/chacha20"
 )
 
 // PacketFiller is a function type to be specified by the caller to provide a
@@ -50,8 +50,8 @@ func DeterministicPacketFiller(sessionKey *secp256k1.PrivateKey,
 
 	// Now that we have our target key, we'll use chacha20 to generate a
 	// series of random bytes directly into the passed mixHeader packet.
-	var nonce [8]byte
-	padCipher, err := chacha20.NewCipher(nonce[:], paddingKey[:])
+	var nonce [chacha20.NonceSize]byte
+	padCipher, err := chacha20.NewUnauthenticatedCipher(paddingKey[:], nonce[:])
 	if err != nil {
 		return err
 	}

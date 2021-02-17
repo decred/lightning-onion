@@ -7,8 +7,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/aead/chacha20"
 	"github.com/decred/dcrd/dcrec/secp256k1/v3"
+	"golang.org/x/crypto/chacha20"
 )
 
 const (
@@ -151,9 +151,9 @@ func generateKey(keyType string, sharedKey *Hash256) [keyLen]byte {
 // construction.
 func generateCipherStream(key [keyLen]byte, numBytes uint) []byte {
 	var (
-		nonce [8]byte
+		nonce [chacha20.NonceSize]byte
 	)
-	cipher, err := chacha20.NewCipher(nonce[:], key[:])
+	cipher, err := chacha20.NewUnauthenticatedCipher(key[:], nonce[:])
 	if err != nil {
 		panic(err)
 	}
