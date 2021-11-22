@@ -1,4 +1,4 @@
-module github.com/decred/lightning-onion/v3
+module github.com/decred/lightning-onion/v4
 
 go 1.13
 

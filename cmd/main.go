@@ -12,7 +12,7 @@ import (
 
 	"github.com/decred/dcrd/chaincfg/v3"
 	"github.com/decred/dcrd/dcrec/secp256k1/v3"
-	sphinx "github.com/decred/lightning-onion/v3"
+	sphinx "github.com/decred/lightning-onion/v4"
 )
 
 type OnionHopSpec struct {
