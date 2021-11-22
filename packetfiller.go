@@ -3,7 +3,7 @@ package sphinx
 import (
 	"crypto/rand"
 
-	"github.com/decred/dcrd/dcrec/secp256k1/v3"
+	"github.com/decred/dcrd/dcrec/secp256k1/v4"
 	"golang.org/x/crypto/chacha20"
 )
 

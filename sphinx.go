@@ -9,9 +9,9 @@ import (
 	"math/big"
 	"sync"
 
-	"github.com/decred/dcrd/dcrec"
-	"github.com/decred/dcrd/dcrec/secp256k1/v3"
-	"github.com/decred/dcrd/dcrutil/v3"
+	"github.com/decred/dcrd/dcrec/secp256k1/v4"
+	"github.com/decred/dcrd/dcrutil/v4"
+	"github.com/decred/dcrd/txscript/v4/stdaddr"
 )
 
 const (
@@ -487,7 +487,7 @@ type ProcessedPacket struct {
 // the onion encryption which the packet is wrapped with.
 type Router struct {
 	nodeID   [AddressSize]byte
-	nodeAddr *dcrutil.AddressPubKeyHash
+	nodeAddr *stdaddr.AddressPubKeyHashEcdsaSecp256k1V0
 
 	onionKey SingleKeyECDH
 
@@ -501,7 +501,9 @@ func NewRouter(nodeKey SingleKeyECDH, net dcrutil.AddressParams, log ReplayLog) 
 	copy(nodeID[:], dcrutil.Hash160(nodeKey.PubKey().SerializeCompressed()))
 
 	// Safe to ignore the error here, nodeID is 20 bytes.
-	nodeAddr, _ := dcrutil.NewAddressPubKeyHash(nodeID[:], net, dcrec.STEcdsaSecp256k1)
+	nodeAddr, _ := stdaddr.NewAddressPubKeyHashEcdsaSecp256k1V0(
+		nodeID[:], net,
+	)
 
 	return &Router{
 		nodeID:   nodeID,
