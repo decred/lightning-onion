@@ -176,11 +176,11 @@ func TestSphinxCorrectness(t *testing.T) {
 	// Now simulate the message propagating through the mix net eventually
 	// reaching the final destination.
 	for i := 0; i < len(nodes); i++ {
-		// Start each node's ReplayLog and defer shutdown
-		nodes[i].log.Start()
-		defer nodes[i].log.Stop()
-
 		hop := nodes[i]
+
+		// Start each node's ReplayLog and defer shutdown
+		requireNoErr(t, hop.log.Start())
+		t.Cleanup(func() { requireNoErr(t, hop.log.Stop()) })
 
 		t.Logf("Processing at hop: %v \n", i)
 		onionPacket, err := hop.ProcessOnionPacket(fwdMsg, nil, uint32(i)+1)
@@ -240,8 +240,8 @@ func TestSphinxSingleHop(t *testing.T) {
 	}
 
 	// Start the ReplayLog and defer shutdown
-	nodes[0].log.Start()
-	defer nodes[0].log.Stop()
+	requireNoErr(t, nodes[0].log.Start())
+	t.Cleanup(func() { requireNoErr(t, nodes[0].log.Stop()) })
 
 	// Simulating a direct single-hop payment, send the sphinx packet to
 	// the destination node, making it process the packet fully.
@@ -267,8 +267,8 @@ func TestSphinxNodeRelpay(t *testing.T) {
 	}
 
 	// Start the ReplayLog and defer shutdown
-	nodes[0].log.Start()
-	defer nodes[0].log.Stop()
+	requireNoErr(t, nodes[0].log.Start())
+	t.Cleanup(func() { requireNoErr(t, nodes[0].log.Stop()) })
 
 	// Allow the node to process the initial packet, this should proceed
 	// without any failures.
@@ -292,8 +292,8 @@ func TestSphinxNodeRelpaySameBatch(t *testing.T) {
 	}
 
 	// Start the ReplayLog and defer shutdown
-	nodes[0].log.Start()
-	defer nodes[0].log.Stop()
+	requireNoErr(t, nodes[0].log.Start())
+	t.Cleanup(func() { requireNoErr(t, nodes[0].log.Stop()) })
 
 	tx := nodes[0].BeginTxn([]byte("0"), 2)
 
@@ -338,8 +338,8 @@ func TestSphinxNodeRelpayLaterBatch(t *testing.T) {
 	}
 
 	// Start the ReplayLog and defer shutdown
-	nodes[0].log.Start()
-	defer nodes[0].log.Stop()
+	requireNoErr(t, nodes[0].log.Start())
+	t.Cleanup(func() { requireNoErr(t, nodes[0].log.Stop()) })
 
 	tx := nodes[0].BeginTxn([]byte("0"), 1)
 
@@ -383,8 +383,8 @@ func TestSphinxNodeReplayBatchIdempotency(t *testing.T) {
 	}
 
 	// Start the ReplayLog and defer shutdown
-	nodes[0].log.Start()
-	defer nodes[0].log.Stop()
+	requireNoErr(t, nodes[0].log.Start())
+	t.Cleanup(func() { requireNoErr(t, nodes[0].log.Stop()) })
 
 	tx := nodes[0].BeginTxn([]byte("0"), 1)
 
@@ -434,8 +434,8 @@ func TestSphinxAssocData(t *testing.T) {
 	}
 
 	// Start the ReplayLog and defer shutdown
-	nodes[0].log.Start()
-	defer nodes[0].log.Stop()
+	requireNoErr(t, nodes[0].log.Start())
+	t.Cleanup(func() { requireNoErr(t, nodes[0].log.Stop()) })
 
 	_, err = nodes[0].ProcessOnionPacket(fwdMsg, []byte("somethingelse"), 1)
 	if err == nil {
@@ -676,11 +676,11 @@ func TestSphinxHopVariableSizedPayloads(t *testing.T) {
 		// of hops here as virtual EOB hops may have been inserted into
 		// the route.
 		for i := 0; i < len(routers); i++ {
-			// Start each node's ReplayLog and defer shutdown
-			routers[i].log.Start()
-			defer routers[i].log.Stop()
-
 			currentHop := routers[i]
+
+			// Start each node's ReplayLog and defer shutdown
+			requireNoErr(t, currentHop.log.Start())
+			t.Cleanup(func() { requireNoErr(t, currentHop.log.Stop()) })
 
 			// Ensure that this hop is able to properly process
 			// this onion packet. If additional EOB hops were

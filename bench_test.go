@@ -68,8 +68,8 @@ func BenchmarkProcessPacket(b *testing.B) {
 		b.Fatalf("unable to create test route: %v", err)
 	}
 	b.ReportAllocs()
-	path[0].log.Start()
-	defer path[0].log.Stop()
+	requireNoErr(b, path[0].log.Start())
+	b.Cleanup(func() { requireNoErr(b, path[0].log.Stop()) })
 	b.StartTimer()
 
 	var (
@@ -83,14 +83,14 @@ func BenchmarkProcessPacket(b *testing.B) {
 
 		b.StopTimer()
 		router := path[0]
-		router.log.Stop()
+		requireNoErr(b, router.log.Stop())
 		path[0] = &Router{
 			nodeID:   router.nodeID,
 			nodeAddr: router.nodeAddr,
 			onionKey: router.onionKey,
 			log:      NewMemoryReplayLog(),
 		}
-		path[0].log.Start()
+		requireNoErr(b, path[0].log.Start())
 		b.StartTimer()
 	}
 

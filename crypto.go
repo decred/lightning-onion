@@ -60,8 +60,8 @@ func (p *PrivKeyECDH) PubKey() *secp256k1.PublicKey {
 // k is our private key, and P is the public key, we perform the following
 // operation:
 //
-//  sx := k*P
-//  s := sha256(sx.SerializeCompressed())
+//	sx := k*P
+//	s := sha256(sx.SerializeCompressed())
 //
 // NOTE: This is part of the SingleKeyECDH interface.
 func (p *PrivKeyECDH) ECDH(pub *secp256k1.PublicKey) ([32]byte, error) {
@@ -205,16 +205,6 @@ func blindBaseElement(blindingFactor []byte) *secp256k1.PublicKey {
 	result.ToAffine()
 
 	return secp256k1.NewPublicKey(&result.X, &result.Y)
-}
-
-// sharedSecretGenerator is an interface that abstracts away exactly *how* the
-// shared secret for each hop is generated.
-//
-// TODO(roasbef): rename?
-type sharedSecretGenerator interface {
-	// generateSharedSecret given a public key, generates a shared secret
-	// using private data of the underlying sharedSecretGenerator.
-	generateSharedSecret(dhKey *secp256k1.PublicKey) (Hash256, error)
 }
 
 // generateSharedSecret generates the shared secret by given ephemeral key.
