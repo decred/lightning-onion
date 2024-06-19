@@ -522,7 +522,7 @@ func (r *Router) Start() error {
 // Stop stops / closes the ReplayLog's channeldb and its accompanying
 // garbage collector goroutine.
 func (r *Router) Stop() {
-	r.log.Stop()
+	_ = r.log.Stop()
 }
 
 // ProcessOnionPacket processes an incoming onion packet which has been forward

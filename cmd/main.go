@@ -142,8 +142,15 @@ func main() {
 			privKeyECDH, chaincfg.TestNet3Params(), replayLog,
 		)
 
-		replayLog.Start()
-		defer replayLog.Stop()
+		if err := replayLog.Start(); err != nil {
+			log.Fatalf("Error starting replay log: %v", err)
+		}
+		defer func() {
+			err := replayLog.Stop()
+			if err != nil {
+				log.Fatalf("Error stopping replay log: %v", err)
+			}
+		}()
 
 		var packet sphinx.OnionPacket
 		err = packet.Decode(bytes.NewBuffer(binMsg))

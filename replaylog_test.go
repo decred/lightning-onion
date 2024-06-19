@@ -9,8 +9,8 @@ import (
 // MemoryReplayLog work as expected.
 func TestMemoryReplayLogStorageAndRetrieval(t *testing.T) {
 	rl := NewMemoryReplayLog()
-	rl.Start()
-	defer rl.Stop()
+	requireNoErr(t, rl.Start())
+	t.Cleanup(func() { requireNoErr(t, rl.Stop()) })
 
 	var hashPrefix HashPrefix
 	hashPrefix[0] = 1
@@ -86,8 +86,8 @@ func TestMemoryReplayLogStorageAndRetrieval(t *testing.T) {
 // works as expected.
 func TestMemoryReplayLogPutBatch(t *testing.T) {
 	rl := NewMemoryReplayLog()
-	rl.Start()
-	defer rl.Stop()
+	requireNoErr(t, rl.Start())
+	t.Cleanup(func() { requireNoErr(t, rl.Stop()) })
 
 	var hashPrefix1, hashPrefix2 HashPrefix
 	hashPrefix1[0] = 1
