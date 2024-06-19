@@ -6,6 +6,7 @@ import (
 	"encoding/binary"
 	"fmt"
 	"io"
+	"math"
 
 	"github.com/decred/dcrd/dcrec/secp256k1/v4"
 	"github.com/decred/dcrd/wire"
@@ -261,6 +262,10 @@ func (hp *HopPayload) Decode(r io.Reader) error {
 		}
 
 		payloadSize = uint32(varInt)
+		if payloadSize > math.MaxUint16 {
+			return fmt.Errorf("payload size %d larger than max allowed %d",
+				payloadSize, math.MaxUint16)
+		}
 		hp.Type = PayloadTLV
 	}
 
