@@ -157,7 +157,7 @@ func NewHopPayload(hopData *HopData, eob []byte) (HopPayload, error) {
 	// should proceed the EOB portion of the payload.
 	if hopData != nil {
 		if err := hopData.Encode(&b); err != nil {
-			return h, nil
+			return h, err
 		}
 
 		// We'll also mark that this particular hop will be using the
@@ -169,7 +169,7 @@ func NewHopPayload(hopData *HopData, eob []byte) (HopPayload, error) {
 		// of opaque bytes that the recipient can decode to make a
 		// forwarding decision.
 		if _, err := b.Write(eob); err != nil {
-			return h, nil
+			return h, err
 		}
 
 		h.Type = PayloadTLV

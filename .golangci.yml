@@ -1,0 +1,34 @@
+version: "2"
+run:
+  timeout: 10m
+linters:
+  default: none
+  enable:
+    - asciicheck
+    - bidichk
+    - bodyclose
+    - dupword
+    - durationcheck
+    - errchkjson
+    - errorlint
+    - govet
+    - grouper
+    - ineffassign
+    - misspell
+    - nilerr
+    - nosprintfhostport
+    - reassign
+    - rowserrcheck
+    - staticcheck
+    - tparallel
+    - unconvert
+    - unused
+    - usetesting
+  settings:
+    staticcheck:
+      checks:
+          - S1*
+formatters:
+  enable:
+    - gofmt
+    - goimports

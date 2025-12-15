@@ -51,7 +51,7 @@ const (
 	// encrypting/decrypting the payload.
 	MaxPayloadSize = routingInfoSize
 
-	// routingInfoSize is the fixed size of the the routing info. This
+	// routingInfoSize is the fixed size of the routing info. This
 	// consists of a addressSize byte address and a HMACSize byte HMAC for
 	// each hop of the route, the first pair in cleartext and the following
 	// pairs increasingly obfuscated. If not all space is used up, the
